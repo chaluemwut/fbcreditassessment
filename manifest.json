@@ -1,0 +1,23 @@
+{
+  "manifest_version": 2,
+
+  "name": "Facebook Credibility Assessment",
+  "description": "This extension for assessment",
+  "version": "1.0",
+
+  "browser_action": {
+    "default_icon": "icon.png",
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+  {
+    "matches": ["https://www.facebook.com/*"],
+    "css": ["kku.css", "jquery/jquery-ui.css"],
+    "js": ["jquery.js", "kku.js", "jquery/jquery-ui.js"]
+    }
+  ],
+  "permissions": [
+    "https://www.facebook.com/",
+    "https://www.sdc.com/sdc/*"
+  ]
+}

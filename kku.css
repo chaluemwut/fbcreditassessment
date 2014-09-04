@@ -1,0 +1,19 @@
+.inline {
+	float: left;
+}
+
+.right_div {
+	float: right;
+}
+
+.clearBoth {
+	clear: both;
+}
+
+.ui-progressbar-value {
+	color: blue;
+    font-size: 13px;
+    font-weight: normal;
+    line-height: 18px;
+    padding-left: 10px;
+}

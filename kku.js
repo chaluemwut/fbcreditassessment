@@ -1,161 +1,98 @@
 
-var server_url = "https://www.sdc.com/sdc/kkucredit/";
-// var server_url = "https://lab.socialdatacomputing.com/sdc/";
+var server_url = "https://www.sdc.com/sdc/fbapi";
 
-var kkuDivId = [];
-
-var info_source_list = ['NationChannelTV','tnamcot', 'krobkruakao3'];
-
-function createSourceButton(ref){
-	ret = '<button id=pro_but_'+ref;
-	ret += ' class="inline" style="position: relative; margin-left: 10px;height:19px;">';
-	// ret +=' <span id=pro_span_'+ref+'></span>';
-	ret += '</button>';
-	return ret;
-}
-
-function createAssessmentButton(){
-	ret = '<div class="right_div">';
-	ret += ' <div class="inline" style="position: relative; margin-top: 3px;">Agree with credit </div>';
-	ret += ' <button class="inline">Yes</button>';
-	ret += ' <button class="inline">No</button>';
-	// ret += '</div>';
-	ret += '</div>';
-	return ret
-}
-
-function createProgressBar(ref){
-	ret = '<div id=pro'+ref;
-	ret += ' class="inline" ';
-	ret += 'style="position: relative; margin-left: 10px;width:80px; height:18px;">';
-	ret += ' </div>';
-	return ret;
-}
-
-function createCreditDiv(divId){
-	ret = '<div id=kku_'+divId+' style="position: relative; margin-top: 5px; width:100%; height:18px;">';
-	ret += '<div class="inline" style="position: relative; margin-top: 3px;">FB Credibility</div>';
-	ret += '<img class="inline" id=img_'+divId+' src="https://dl.dropboxusercontent.com/u/7385478/waiting.gif"  width="20" height="20" alt="Loading"/>';
-	ret += createSourceButton(divId);
-	ret += createAssessmentButton();
+function templateRating(counter){
+	ret = '<div>';
+	ret += '<input type="radio" id="radio'+counter+'" value="1" name="radio'+counter+'"/>';
+	ret += '<input type="radio" id="radio'+counter+'" value="2" name="radio'+counter+'"/>';
+	ret += '<input type="radio" id="radio'+counter+'" value="3" name="radio'+counter+'"/>';
+	ret += '<input type="radio" id="radio'+counter+'" value="4" name="radio'+counter+'"/>';
+	ret += '<input type="radio" id="radio'+counter+'" value="5" name="radio'+counter+'"/>';
+	ret += '<input type="radio" id="radio'+counter+'" value="6" name="radio'+counter+'"/>';
+	ret += '<input type="radio" id="radio'+counter+'" value="7" name="radio'+counter+'"/>';
+	ret += '<input type="radio" id="radio'+counter+'" value="8" name="radio'+counter+'"/>';
+	ret += '<input type="radio" id="radio'+counter+'" value="9" name="radio'+counter+'"/>';
+	ret += '<input type="radio" id="radio'+counter+'" value="10" name="radio'+counter+'"/>';
+	ret += '<button id=sub_'+counter+'>submit</button>';
 	ret += '</div>';
 	return ret;
 }
 
-function createGreenDiv(divId){
-	var textContent = templateTextContent('green');
+function createRatingAssessment(divId, linkId){
+	var textContent = templateRating(divId);
+	textContent += '<input type="hidden" id=fb_link_'+divId+' value="'+linkId+'"/>'
 	return templateDiv(divId, textContent);
-}
-
-function createYellowDiv(divId){
-	var textContent = templateTextContent('yellow');
-	return templateDiv(divId, textContent);
-}
-
-function createRedDiv(divId){
-	var textContent = templateTextContent('red');
-	return templateDiv(divId, textContent);
-}
-
-function templateTextContent(color){
-	return '<div class="inline" style="position: relative; margin-left: 5px; width:30px; height:18px; background-color:'+color+'"></div>';
 }
 
 function templateDiv(divId, textContent){
 	ret = '<div id=kku_'+divId+' style="position: relative; margin-top: 5px; width:100%; height:18px;">';
 	ret += '<div class="inline" style="position: relative; margin-top: 3px;">FB Credibility</div>';
 	ret += textContent;
-	ret += createAssessmentButton();
 	ret += '</div>';
 	return ret;	
 }
 
-function isYellow(userContent) {
-	//has link, vdo, image
-	var userData = $(userContent).find("[class$=' userContent']");
-	var divImage = $(userContent).children()[3];
-	console.log('find div'+$(userContent).children().length);
-	if($(userData).find("a").length) { // it has link
-		return true;
-	} else if( $(divImage).find("a").length && 
-		       $(userContent).children().length == 5 ){
-		return true;
+function getObjId(link){
+	var first = link.substring(0,1);
+	console.log(first);
+	if(first == '/'){
+		return link.split('/')[3];
 	}
-	return false;
+	return 'nono';
 }
 
 $(document).ready(function () {
+	chrome.runtime.sendMessage({greeting: "hello"}, function(response) {
+		localStorage.accessToken = response.farewell;
+	});
 
+	var counter=0;
 	setInterval(function(){
-		console.log('start script update');
+		// console.log('start script update');
+		// console.log('local token : '+localStorage.accessToken);
+		if(!localStorage.accessToken){
+			return;
+		}
 		$("[class*='userContentWrapper']").each(function(i){
 			var sub_stream = $(this);
 			var clearfix = $(sub_stream).find("[class='clearfix _5x46']");
 			var info_source = $(clearfix).find("a");
+			// console.log(clearfix.text());
 			
 			if($(clearfix).find("[id^='kku_']").length){
 				// console.log('found');
 			} else {
-				var pageId = info_source.attr("href").replace("https://www.facebook.com/","");
-				if(info_source_list.indexOf(pageId) != -1) {
-					clearfix.append(createGreenDiv('0_0'));
-				} else if(isYellow(sub_stream)) {
-					clearfix.append(createYellowDiv('0_0'));
-				} else {
-					clearfix.append(createRedDiv('0_0'));
-				}
+				var index_count = $(sub_stream).children().length;
+				var link_id = $(clearfix).find("span[class='fsm fwn fcg'] > a[class='_5pcq']");
+				console.log('link '+link_id.attr('href'));
+				clearfix.append(createRatingAssessment(counter, link_id.attr('href')));
+				$("#sub_"+counter).click(function(){
+					var obj = $(this);
+					// console.log('counter '+obj.attr('id'));
+					var obj_id = obj.attr('id').replace("sub_","");
+					var data = $("#radio"+obj_id+":checked");
+					var post_obj = $(sub_stream).find("#fb_link_"+obj_id);
+					var post_id = getObjId(post_obj.val());
+					console.log('post id '+post_id);
+					// console.log(post_id.val());
+					var token = localStorage.accessToken.replace('access_token=','')
+					var urlCall = server_url+"?rating="+data.val()+"&obj_id="+post_id+"&token="+token;
+					console.log('url '+urlCall);
+					$.ajax({
+						type: "GET",
+						async: true,
+						url: urlCall,
+						withCredentials: true,
+						success: function(result){
+							console.log(result);
+						}
+					});
+				});
+				counter++;
 			}
 		});
+		// console.log('end script');
 	}, 3000);
 
-
-	//add at first time
-	// $("[id*='feed_stream_']").children().each(function(i){
-	// 	if (i == 0) return;
-	// 	var sub_stream = $(this);
-	// 	var news_feed_list = sub_stream.children().children();
-	// 	// console.log(news_feed_list.size());
-	// 	for(var j=0; j < news_feed_list.size(); j++){
-	// 		var news_feed = news_feed_list.get(j);
-	// 		var news_feed_html = jQuery(news_feed);
-	// 		var userContentWrapper = news_feed_html.children();
-	// 		var attr = userContentWrapper[0];
-	// 		//add ui
-	// 		var clearfix = $("[class*='clearfix']").find(attr);
-	// 		var target = jQuery($("[class*='clearfix'] > div > div").find(attr).children().children());
-	// 		var header = jQuery(target[2]);
-	// 		var refDivId = i+'_'+j;
-	// 		kkuDivId.push(refDivId);
-	// 		header.after(createCreditDiv(refDivId));
-
-	// 		//call ajax
-	// 		var userContent = $(attr).find("[class*='userContent']");
-	// 		var userContentText = userContent.text();
-	// 		var urlCall = server_url+"?ref="+refDivId+"&message="+userContentText;
-	// 		$.ajax({
-	// 			type: "GET",
-	// 			async: true,
-	// 			url: urlCall,
-	// 			withCredentials: true,
-	// 			success: function(result){
-	// 				// console.log(result);
-	// 				var ref = result['ref'];
-	// 				var credit = result['credit'];
-	// 				var source = result['source'];
-	// 				$("#img_"+ref).replaceWith(createProgressBar(ref));
-	// 				$("#pro_but_"+ref).text(source.length+' source');
-	// 				$("#pro"+ref).progressbar({
-	// 					value: credit*100
-	// 				}).children('.ui-progressbar-value')
-	// 				.html((credit*100).toPrecision(2) + '%')
-	// 				.css("display", "block");
-	// 			}
-	// 		});
-
-	// 	}
-	// });
-
-
- 
 });
 console.log('end script');

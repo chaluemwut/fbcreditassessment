@@ -5,19 +5,28 @@
   "description": "This extension for assessment",
   "version": "1.0",
 
+  "background": 
+  {"page":"background.html"
+  },
+    
+  "content_scripts": [
+  {
+    "matches": ["https://www.facebook.com/*"],
+    "css": ["kku.css", "jquery/jquery-ui.css","jquery/jRating.jquery.css"],
+    "js": ["jquery.js", "kku.js", "popup.js", "jquery/jquery-ui.js", "jquery/jRating.jquery.js"]
+    }
+  ],
+  "permissions": [
+    "tabs",
+    "storage",
+    "https://www.facebook.com/",
+    "https://www.sdc.com/sdc/*"
+  ],
   "browser_action": {
     "default_icon": "icon.png",
     "default_popup": "popup.html"
   },
-  "content_scripts": [
-  {
-    "matches": ["https://www.facebook.com/*"],
-    "css": ["kku.css", "jquery/jquery-ui.css"],
-    "js": ["jquery.js", "kku.js", "jquery/jquery-ui.js"]
-    }
-  ],
-  "permissions": [
-    "https://www.facebook.com/",
-    "https://www.sdc.com/sdc/*"
+  "web_accessible_resources": [
+       "jquery/icons/stars.png", "jquery/icons/small.png", "popup.js", "background.js"
   ]
 }

@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
 
-  "name": "Facebook Credibility Assessment",
-  "description": "This extension for assessment",
+  "name": "Facebook Credibility Evaluator",
+  "description": "This extension for credibility evaluator",
   "version": "1.0",
 
   "background": 
@@ -20,6 +20,7 @@
     "tabs",
     "storage",
     "https://www.facebook.com/",
+    "https://www.fbcredibility.com/sdc/fbapi",
     "https://www.sdc.com/sdc/*"
   ],
   "browser_action": {
@@ -27,6 +28,6 @@
     "default_popup": "popup.html"
   },
   "web_accessible_resources": [
-       "jquery/icons/stars.png", "jquery/icons/small.png", "popup.js", "background.js"
+       "rating1.png","rating2.png","jquery/icons/stars.png", "jquery/icons/small.png", "popup.js", "background.js"
   ]
 }

@@ -1,8 +1,10 @@
 
-var server_url = "https://www.sdc.com/sdc/fbapi";
+var server_url = "https://www.fbcredibility.com/sdc/fbapi";
+// var server_url = 'https://www.sdc.com/sdc/fbapi'
 
 function templateRating(counter){
-	ret = '<div>';
+	ret = '<div style=height:100%>';
+	ret += ' <div>';
 	ret += '<input type="radio" id="radio'+counter+'" value="1" name="radio'+counter+'"/>';
 	ret += '<input type="radio" id="radio'+counter+'" value="2" name="radio'+counter+'"/>';
 	ret += '<input type="radio" id="radio'+counter+'" value="3" name="radio'+counter+'"/>';
@@ -14,7 +16,11 @@ function templateRating(counter){
 	ret += '<input type="radio" id="radio'+counter+'" value="9" name="radio'+counter+'"/>';
 	ret += '<input type="radio" id="radio'+counter+'" value="10" name="radio'+counter+'"/>';
 	ret += '<button id=sub_'+counter+'>submit</button>';
-	ret += '</div>';
+	ret += ' </div>';
+	ret += ' <div style="margin-left:80px">';
+	ret += ' <img src="'+chrome.extension.getURL('rating2.png')+'"/>';
+	ret += ' </div>';
+	ret += '<div>';
 	return ret;
 }
 
@@ -25,8 +31,8 @@ function createRatingAssessment(divId, linkId){
 }
 
 function templateDiv(divId, textContent){
-	ret = '<div id=kku_'+divId+' style="position: relative; margin-top: 5px; width:100%; height:18px;">';
-	ret += '<div class="inline" style="position: relative; margin-top: 3px;">FB Credibility</div>';
+	ret = '<div id=kku_'+divId+' style="position: relative; margin-top: 10px; margin-bottom: 20px; width:100%; height:25px;">';
+	ret += '<div class="inline" style="position: relative; margin-top: 3px; color:#FF8000">FB Credibility</div>';
 	ret += textContent;
 	ret += '</div>';
 	return ret;	
@@ -35,10 +41,40 @@ function templateDiv(divId, textContent){
 function getObjId(link){
 	var first = link.substring(0,1);
 	console.log(first);
-	if(first == '/'){
-		return link.split('/')[3];
+	if(first == '/'){ //is posts type
+		var short_url = link.split('/');
+		if(short_url[2] == 'posts'){
+			return short_url[3];
+		}
+		if(short_url[2] == 'photos'){
+			return short_url[4];
+		}
 	}
-	return 'nono';
+	var base_url = link.replace("https://www.facebook.com/","");
+	// https://www.facebook.com/OpenSourceForU/photos/a.112258614432.84824.58079349432/10152716463189433/?type=1
+	var photo_type = base_url.split('/');
+	if(photo_type[1] == 'photos'){
+		return photo_type[3];
+	}
+
+	// video
+	// https://www.facebook.com/video.php?v=10152712805877450
+	var video_type = base_url.substring(0,9);
+	console.log(video_type);
+	if(video_type == 'video.php'){
+		return base_url.replace("video.php?v=","");
+	}
+
+	//permalink permalink.php?story_fbid=910840168926902&id=100000027825211
+	var permalink_type = base_url.substring(1,14);
+	console.log('per link : '+permalink_type);
+	if(permalink_type == 'permalink.php'){
+		var permalink_data = base_url.replace("permalink.php?story_fbid=","");
+		var permalink_list = permalink_data.split('&');
+		return permalink_list[0].substring(1, permalink_list[0].length);
+	}
+
+	return 'none';
 }
 
 $(document).ready(function () {
@@ -73,10 +109,11 @@ $(document).ready(function () {
 					var data = $("#radio"+obj_id+":checked");
 					var post_obj = $(sub_stream).find("#fb_link_"+obj_id);
 					var post_id = getObjId(post_obj.val());
-					console.log('post id '+post_id);
+					// console.log('post id '+post_id);
 					// console.log(post_id.val());
-					var token = localStorage.accessToken.replace('access_token=','')
-					var urlCall = server_url+"?rating="+data.val()+"&obj_id="+post_id+"&token="+token;
+					// var token = localStorage.accessToken.replace('access_token=','')
+					var token = localStorage.accessToken
+					var urlCall = server_url+"?rating="+data.val()+"&obj_id="+post_id+"&return_id="+obj_id+"&token="+token;
 					console.log('url '+urlCall);
 					$.ajax({
 						type: "GET",
@@ -85,6 +122,16 @@ $(document).ready(function () {
 						withCredentials: true,
 						success: function(result){
 							console.log(result);
+							ret_id = result['return_id'];
+							description = result['description'];
+							var data = '';
+							if (result['status'] == 0) {
+								data = '<div id=msg_'+ret_id+' style="color:green;">'+description+'</div>';
+							} else {
+								data = '<div id=msg_'+ret_id+' style="color:red;">'+description+'</div>';
+							}
+							$('#kku_'+ret_id).append(data);
+							// $('#msg_'+ret_id).addClass('inline');
 						}
 					});
 				});

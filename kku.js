@@ -1,6 +1,6 @@
 
 var server_url = "https://www.fbcredibility.com/sdc/fbapi";
-// var server_url = 'https://www.sdc.com/sdc/fbapi'
+// var server_url = 'https://www.sdc.com/sdc/fbapi';
 
 function templateRating(counter){
 	ret = '<div style=height:100%>';

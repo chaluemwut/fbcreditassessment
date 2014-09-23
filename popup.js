@@ -13,8 +13,36 @@
             // }
 // }
 
+function facebook(){
+    var props = {
+        'url' : "https://www.facebook.com/dialog/oauth?"
+                                + "display=popup&"
+                                + "client_id=1465202247078264&"
+                                + "redirect_uri=https://www.facebook.com/connect/login_success.html&"
+                                + "scope=read_stream&" + "response_type=token",
+        'height' : 400,
+        'width' : 580
+    }
+
+    chrome.windows.create(props, function(windowObj){
+        // console.log("Here's the window object.");
+        // chrome.tabs.getAllInWindow(null, function(tabs) {
+        //     console.log('inner all...');
+        // });
+    });    
+}
 function loginfacebook(callback) {
     console.log('login face');
+    // var props2 = {
+    //     'url' : "https://www.fbcredibility.com/sdc/fbconfirm/",
+    //     'height' : 400,
+    //     'width' : 580
+    // }
+
+    // chrome.windows.create(props2, function(windowObj){
+        
+    // });
+        
     var props = {
         'url' : "https://www.facebook.com/dialog/oauth?"
                                 + "display=popup&"

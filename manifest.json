@@ -1,9 +1,9 @@
 {
   "manifest_version": 2,
 
-  "name": "Facebook Credibility Evaluator",
+  "name": "FB Credibility Evaluator - Graph",
   "description": "This extension for credibility evaluator",
-  "version": "2.0",
+  "version": "2.1",
 
   "background": 
   {"page":"background.html"
